@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>JS Pacman</title>
+  </head>
+  <body>
+    <div id="wrapper">
+      <h2 class="title">Pac-Man</h2>
+      <div id="game"></div>
+      <div id="stats">
+        <div id="timer">
+          <label id="minutes">00</label>
+          <label id="colon">:</label>
+          <label id="seconds">00</label>
+        </div>
+        <div id="score"></div>
+        <div id="hp">
+          <img id="pac-1" src="assets/pacman.png" alt="Pacman">
+          <img id="pac-2" src="assets/pacman.png" alt="Pacman">
+          <img id="pac-3" src="assets/pacman.png" alt="Pacman">
+        </div>
+      </div>
+      <div class="btns">
+        <button id="start-button">Start</button>
+        <button id="pause-button" class = "hide">Pause</button>
+      </div>
+    </div>
+    <script src="setup.js"></script>
+    <script src="GameBoard.js"></script>
+    <script src="Pacman.js"></script>
+    <script src="Ghost.js"></script>
+    <script src="ghostmoves.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>
