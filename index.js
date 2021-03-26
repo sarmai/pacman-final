@@ -8,14 +8,13 @@ const startButton = document.querySelector("#start-button");
 const pauseButton = document.querySelector("#pause-button");
 
 const POWER_PILL_TIME = 10000;
-const FPS = 10;
 const gameBoard = GameBoard.createGameBoard(gameGrid, LEVEL);
-const pacman = new Pacman(1, 287);
+const pacman = new Pacman(12, 287);
 const ghosts = [
-  new Ghost(5, 188, randomMovement, OBJECT_TYPE.BLINKY),
-  new Ghost(4, 209, randomMovement, OBJECT_TYPE.PINKY),
-  new Ghost(3, 230, randomMovement, OBJECT_TYPE.INKY),
-  new Ghost(2, 251, randomMovement, OBJECT_TYPE.CLYDE),
+  new Ghost(15, 188, randomMovement, OBJECT_TYPE.BLINKY),
+  new Ghost(20, 209, randomMovement, OBJECT_TYPE.PINKY),
+  new Ghost(18, 230, randomMovement, OBJECT_TYPE.INKY),
+  new Ghost(14, 251, randomMovement, OBJECT_TYPE.CLYDE),
 ];
 
 // --- SOUNDS --- //
@@ -26,7 +25,6 @@ const soundGameOver = "./sounds/death.wav";
 const soundGhost = "./sounds/eat_ghost.wav";
 
 let reqID;
-let timeoutID;
 let gameTimerID;
 let requestAnimationFrame =
   window.requestAnimationFrame ||
@@ -80,7 +78,6 @@ const gameOver = () => {
   cancelAnimationFrame(reqID);
   gameLost = true;
 
-  // startButton.classList.remove("hide");
   startButton.textContent = "Start";
   pauseButton.classList.add("hide");
 };
@@ -106,8 +103,6 @@ const checkCollision = () => {
         gameBoard.addObject(287, [OBJECT_TYPE.PACMAN]);
         hpTable.querySelector(`#pac-${hp}`).classList.add("hide-img");
         hp--;
-        clearTimeout(timeoutID);
-        // reqID = requestAnimationFrame(gameLoop);
       } else {
         hpTable.querySelector(`#pac-${hp}`).classList.add("hide-img");
         gameBoard.removeObject(pacman.pos, [OBJECT_TYPE.PACMAN]);
@@ -119,44 +114,41 @@ const checkCollision = () => {
 };
 
 const gameLoop = () => {
-  timeoutID = setTimeout(() => {
-    gameBoard.moveCharacter(pacman);
-    checkCollision();
-    ghosts.forEach((ghost) => gameBoard.moveCharacter(ghost));
-    checkCollision();
+  gameBoard.moveCharacter(pacman);
+  ghosts.forEach((ghost) => gameBoard.moveCharacter(ghost));
+  checkCollision();
 
-    //check if pacman eats a dot
-    if (gameBoard.objectExist(pacman.pos, OBJECT_TYPE.DOT)) {
-      playAudio(soundDot);
-      gameBoard.removeObject(pacman.pos, [OBJECT_TYPE.DOT]);
-      gameBoard.dotCount--;
-      score += 10;
-    }
+  //check if pacman eats a dot
+  if (gameBoard.objectExist(pacman.pos, OBJECT_TYPE.DOT)) {
+    playAudio(soundDot);
+    gameBoard.removeObject(pacman.pos, [OBJECT_TYPE.DOT]);
+    gameBoard.dotCount--;
+    score += 10;
+  }
 
-    //check if pacman eats a power pill
-    if (gameBoard.objectExist(pacman.pos, OBJECT_TYPE.PILL)) {
-      playAudio(soundPill);
-      gameBoard.removeObject(pacman.pos, [OBJECT_TYPE.PILL]);
-      score += 50;
-      pacman.powerPill = true;
-      clearTimeout(powerPillTimer);
-      powerPillTimer = setTimeout(() => {
-        pacman.powerPill = false;
-      }, POWER_PILL_TIME);
-    }
-    if (pacman.powerPill !== powerPillActive) {
-      powerPillActive = pacman.powerPill;
-      ghosts.forEach((ghost) => {
-        ghost.isScared = pacman.powerPill;
-      });
-    }
-    if (gameBoard.dotCount === 0) {
-      gameWin = true;
-      gameOver();
-    }
-    scoreTable.innerHTML = score;
-    if (!gameLost & !pause) reqID = requestAnimationFrame(gameLoop);
-  }, 1000 / FPS);
+  //check if pacman eats a power pill
+  if (gameBoard.objectExist(pacman.pos, OBJECT_TYPE.PILL)) {
+    playAudio(soundPill);
+    gameBoard.removeObject(pacman.pos, [OBJECT_TYPE.PILL]);
+    score += 50;
+    pacman.powerPill = true;
+    clearTimeout(powerPillTimer);
+    powerPillTimer = setTimeout(() => {
+      pacman.powerPill = false;
+    }, POWER_PILL_TIME);
+  }
+  if (pacman.powerPill !== powerPillActive) {
+    powerPillActive = pacman.powerPill;
+    ghosts.forEach((ghost) => {
+      ghost.isScared = pacman.powerPill;
+    });
+  }
+  if (gameBoard.dotCount === 0) {
+    gameWin = true;
+    gameOver();
+  }
+  scoreTable.innerHTML = score;
+  if (!gameLost & !pause) reqID = requestAnimationFrame(gameLoop);
 };
 
 const pauseGame = () => {
@@ -182,11 +174,12 @@ const startGame = () => {
   hp = 3;
   let imgs = hpTable.querySelectorAll("img");
   imgs.forEach((i) => i.classList.remove("hide-img"));
-  clearTimeout(timeoutID);
+
+  totalSeconds = 0;
   clearInterval(gameTimerID);
   gameTimerID = setInterval(setTime, 1000);
 
-  // startButton.classList.add("hide");
+  cancelAnimationFrame(reqID);
 
   pacman.reset(287);
   ghosts.forEach((ghost) => ghost.reset());
@@ -198,7 +191,6 @@ const startGame = () => {
     pacman.handleKeyInput(e, gameBoard.objectExist)
   );
 
-  //   timer = setInterval(() => gameLoop(pacman), GLOBAL_SPEED);
   reqID = requestAnimationFrame(gameLoop);
 };
 
